@@ -1,9 +1,18 @@
 import engine as game
 
-player = game.Player("Player", 10, 1, 5, 0, 100)
-target_dummy = game.Entity("Dummy", 10, 100)
+player = game.Player("Player", 100, 0, 5, 20, 50, 1, 0)
 
-sword = game.Weapon("Sword", 5, 200, 0)
+sword = game.Weapon("Sword", 10, 0, 10, 1, 0)
+bow = game.Weapon("Bow", 10, 30, 50, 1, 0)
+
 player.obtain_item(sword)
+player.obtain_item(bow)
 
-print(f"{sword.name} deals {sword.calculate_damage(target_dummy, player)} damage")
+
+
+
+    
+
+
+
+    

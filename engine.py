@@ -1,4 +1,4 @@
-import random
+from random import randint
 
 class Entity:
 
@@ -7,8 +7,9 @@ class Entity:
 
     def __init__(self, name, hp,  defense):
         self.name = name
-        self.hp = hp
+        self.max_hp = hp
         self.defense = defense
+        self.hp = self.max_hp
         Entity.instances.append(self)
         Entity.instance_names[self.name.lower()] = self
     
@@ -16,7 +17,7 @@ class Entity:
         self.hp -= damage
 
     def heal(self, amount):
-        self.hp += amount
+        self.hp = min(self.hp + amount, self.max_hp)
 
     def talk(self, words):
         print(f"{self.name}: {words}")
@@ -24,18 +25,26 @@ class Entity:
 
 class Enemy(Entity):
     
-    def __init__(self, name, hp, defense, attack, crit_rate, crit_damage):
+    def __init__(self, name, hp, defense, attack, crit_rate, crit_damage, level, experience_worth):
         super().__init__(name, hp, defense)
+
         self.attack = attack
         self.crit_rate = crit_rate
         self.crit_damage = crit_damage
+        self.level = level
+        self.experience_worth = experience_worth
     
     def action_attack(self, target, weapon):
+        if weapon == None:
+            fist.attack_weapon(target, self)
+
         if self.hp > 0:
             weapon.attack_weapon(target, self)
     
     def say_info(self):
         print(f"{self.name} has {self.hp} hp, {self.defense} defense and {self.attack} attack")
+
+
 
 
 class Weapon:
@@ -50,35 +59,60 @@ class Weapon:
 
     instances = {}
 
-    def __init__(self, name, damage, crit_rate, crit_damage):
+    def __init__(self, name, damage, crit_rate, crit_damage, level, experience):
         self.name = name
         self.damage = damage
         self.crit_rate = crit_rate
         self.crit_damage = crit_damage
+        self.level = level
+        self.experience = experience
         Weapon.instances[self.name] = self
     
     def attack_weapon(self, target, user):
 
-        target = Entity.instance_names[target.lower()]
-        
+        target = Entity.instance_names[target.lower()] 
+
 
         target.take_damage(self.calculate_damage(target, user))
+
         if target.hp <= 0:
-            print(f"{target.name} died")
+            print(f"{user.name} hit {target.name} with {self.name} for {self.calculate_damage(target, user)} damage.")
+            if isinstance(target, Player):
+                print("You died.")
+                print("Exiting game...")
+                quit()
+            
+            else:
+                print(f"{target.name} died.")
+                user.experience += target.experience_worth
+                self.experience += int(target.experience_worth * 1.5)
+
+            del target
+            
         else:
-            print(f"{user.name} hit {target.name} with {self.name} for {self.damage+user.attack} damage.")
+            print(f"{user.name} hit {target.name} with {self.name} for {self.calculate_damage(target, user)} damage.")
             print(f"{target.name} has {target.hp} hp left.")
+            if isinstance(target, Enemy):
+                target.action_attack(self, user, None)
+
 
     def calculate_damage(self, target, user):
-        local_crit_rate = self.crit_rate + user.crit_rate
+        
+        full_criticals = self.calculate_criticals(user)
         local_crit_damage = self.crit_damage + user.crit_damage
-
-        full_criticals = local_crit_rate // 100
-        full_criticals += 1 if random.randint(0, 100) < local_crit_rate % 100 else 0
 
         damage = (1 - target.defense / (target.defense + 100)) * (self.damage + user.attack) * (1 + full_criticals * local_crit_damage / 100)
 
         return damage
+    
+    def calculate_criticals(self, user):
+        local_crit_rate = self.crit_rate + user.crit_rate
+
+        full_criticals = local_crit_rate // 100
+        full_criticals += 1 if randint(0, 100) < local_crit_rate % 100 else 0
+
+        return full_criticals
+
 
 # NPC class
 class NPC(Entity):
@@ -87,15 +121,18 @@ class NPC(Entity):
 
 # Player class
 class Player(Enemy):
-    def __init__(self, name, hp, defense, attack, crit_rate, crit_damage):
+    def __init__(self, name, hp, defense, attack, crit_rate, crit_damage, level, experience):
         # Create an empty inventory list
         inventory = []
 
         # Assign the inventory list to self.inventory attribute
         self.inventory = inventory
 
-        # Call the parent class __init__ method to initialize name, hp, defense, and attack attributes
-        super().__init__(name, hp, defense, attack, crit_rate, crit_damage)
+        self.experience = experience
+
+
+        # Call the parent class __init__ method to initialize name, hp, defense, attack, crit_rate, and crit_damage attributes
+        super().__init__(name, hp, defense, attack, crit_rate, crit_damage, level, 0)
     
     def obtain_item(self, item):
         # Add item to the inventory
@@ -168,3 +205,7 @@ class Player(Enemy):
         else:
             print("You don't have that item")
             self.ask_weapon(target)
+
+
+# Definitions of engine-crucial instances
+fist = Weapon("Fist", 0, 0, 0, 0, 0)
