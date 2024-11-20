@@ -132,6 +132,7 @@ class Weapon:
     def level_up(self):
         while self.experience >= self.experience_per_level:
             self.experience -= self.experience_per_level
+            self.recalculate_stats_on_level_up()
 
     def recalculate_stats_on_level_up(self):
         
