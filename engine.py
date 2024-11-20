@@ -26,16 +26,23 @@ class Entity:
 class Enemy(Entity):
     
     def __init__(self, name, hp, defense, attack, crit_rate, crit_damage, level, experience_worth):
-        super().__init__(name, hp, defense)
 
-        self.attack = attack
-        self.crit_rate = crit_rate
-        self.crit_damage = crit_damage
         self.level = level
+
+        constant_multiplier = 1 + (level + 100) / level
+
+        super().__init__(name, hp * constant_multiplier, defense * constant_multiplier)
+
+        self.attack = attack * constant_multiplier
+        self.crit_rate = crit_rate * constant_multiplier
+        self.crit_damage = crit_damage * constant_multiplier
         self.experience_worth = experience_worth
+
+
+
     
     def action_attack(self, target, weapon):
-        if weapon == None:
+        if weapon is None:
             fist.attack_weapon(target, self)
 
         if self.hp > 0:
@@ -52,20 +59,26 @@ class Weapon:
 
     Attributes:
         name (str): The name of the weapon
-        damage (int): The damage of the weapon
-        crit_rate (float): The critical rate of the weapon, in percentage (0 - 100, over 100 = chance to crit multiple times)
-        crit_damage (float): The critical damage of the weapon (increases damage by a certain percentage on a crit)
+        damage (int): The damage stat of the weapon
+        crit_rate (float): The critical rate of the weapon, in percentage (percentage, over 100 = chance to crit multiple times)
+        crit_damage (float): The critical damage stat of the weapon (increases damage by a certain percentage on a crit)
     """    
 
     instances = {}
 
-    def __init__(self, name, damage, crit_rate, crit_damage, level, experience):
-        self.name = name
-        self.damage = damage
-        self.crit_rate = crit_rate
-        self.crit_damage = crit_damage
+    def __init__(self, name, damage, crit_rate, crit_damage, level, experience, experience_per_level):
+
+        constant_multiplier = self.calculate_constant_multiplier()
+
         self.level = level
+        self.name = name
+
+        self.damage = damage * constant_multiplier
+        self.crit_rate = crit_rate * constant_multiplier
+        self.crit_damage = crit_damage * constant_multiplier
+        self.experience_per_level = experience_per_level * constant_multiplier
         self.experience = experience
+
         Weapon.instances[self.name] = self
     
     def attack_weapon(self, target, user):
@@ -81,7 +94,7 @@ class Weapon:
                 print("You died.")
                 print("Exiting game...")
                 quit()
-            
+
             else:
                 print(f"{target.name} died.")
                 user.experience += target.experience_worth
@@ -93,25 +106,64 @@ class Weapon:
             print(f"{user.name} hit {target.name} with {self.name} for {self.calculate_damage(target, user)} damage.")
             print(f"{target.name} has {target.hp} hp left.")
             if isinstance(target, Enemy):
-                target.action_attack(self, user, None)
+                target.action_attack(self, user)
 
 
     def calculate_damage(self, target, user):
         
-        full_criticals = self.calculate_criticals(user)
+        full_critical_hits = self.calculate_critical_hits(user)
         local_crit_damage = self.crit_damage + user.crit_damage
 
-        damage = (1 - target.defense / (target.defense + 100)) * (self.damage + user.attack) * (1 + full_criticals * local_crit_damage / 100)
+        damage = (1 - target.defense / (target.defense + 100)) * (self.damage + user.attack) * (1 + full_critical_hits * local_crit_damage / 100)
 
         return damage
     
-    def calculate_criticals(self, user):
+    def calculate_critical_hits(self, user):
         local_crit_rate = self.crit_rate + user.crit_rate
 
-        full_criticals = local_crit_rate // 100
-        full_criticals += 1 if randint(0, 100) < local_crit_rate % 100 else 0
+        full_critical_hits = local_crit_rate // 100
+        full_critical_hits  += 1 if randint(0, 100) < local_crit_rate % 100 else 0
 
-        return full_criticals
+        return full_critical_hits
+    
+    def calculate_constant_multiplier(self):
+        return 0.99 + (self.level + 100) / self.level
+
+    def level_up(self):
+        while self.experience >= self.experience_per_level:
+            self.experience -= self.experience_per_level
+
+    def recalculate_stats_on_level_up(self):
+        
+            constant_multiplier = self.calculate_constant_multiplier()
+
+            self.max_hp /= constant_multiplier
+            self.hp /= constant_multiplier
+            self.defense /= constant_multiplier
+            self.damage /= constant_multiplier
+            self.crit_chance /= constant_multiplier
+            self.crit_damage /= constant_multiplier
+            self.experience_per_level /= constant_multiplier
+
+            self.level += 1
+
+            constant_multiplier = self.calculate_constant_multiplier()
+
+            self.max_hp *= constant_multiplier
+            self.hp *= constant_multiplier
+            self.defense *= constant_multiplier
+            self.damage *= constant_multiplier
+            self.crit_chance *= constant_multiplier
+            self.crit_damage *= constant_multiplier
+            self.experience_per_level *= constant_multiplier
+
+
+
+
+
+            
+
+            
 
 
 # NPC class
@@ -121,7 +173,7 @@ class NPC(Entity):
 
 # Player class
 class Player(Enemy):
-    def __init__(self, name, hp, defense, attack, crit_rate, crit_damage, level, experience):
+    def __init__(self, name, hp, defense, attack, crit_rate, crit_damage, level, experience, experience_per_level):
         # Create an empty inventory list
         inventory = []
 
@@ -129,6 +181,7 @@ class Player(Enemy):
         self.inventory = inventory
 
         self.experience = experience
+        self.experience_per_level = experience_per_level
 
 
         # Call the parent class __init__ method to initialize name, hp, defense, attack, crit_rate, and crit_damage attributes
