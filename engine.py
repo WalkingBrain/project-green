@@ -29,7 +29,7 @@ class Enemy(Entity):
 
         self.level = level
 
-        constant_multiplier = 1 + (level + 100) / level
+        constant_multiplier = self.calculate_constant_multiplier()
 
         super().__init__(name, hp * constant_multiplier, defense * constant_multiplier)
 
@@ -51,7 +51,8 @@ class Enemy(Entity):
     def say_info(self):
         print(f"{self.name} has {self.hp} hp, {self.defense} defense and {self.attack} attack")
 
-
+    def calculate_constant_multiplier(self):
+        return 0.99 + (self.level + 100) / self.level
 
 
 class Weapon:
@@ -60,7 +61,7 @@ class Weapon:
     Attributes:
         name (str): The name of the weapon
         damage (int): The damage stat of the weapon
-        crit_rate (float): The critical rate of the weapon, in percentage (percentage, over 100 = chance to crit multiple times)
+        crit_rate (float): The critical rate of the weapon, in percentage (over 100 = chance to crit multiple times)
         crit_damage (float): The critical damage stat of the weapon (increases damage by a certain percentage on a crit)
     """    
 
@@ -136,35 +137,28 @@ class Weapon:
 
     def recalculate_stats_on_level_up(self):
         
-            constant_multiplier = self.calculate_constant_multiplier()
+        constant_multiplier = self.calculate_constant_multiplier()
 
-            self.max_hp /= constant_multiplier
-            self.hp /= constant_multiplier
-            self.defense /= constant_multiplier
-            self.damage /= constant_multiplier
-            self.crit_chance /= constant_multiplier
-            self.crit_damage /= constant_multiplier
-            self.experience_per_level /= constant_multiplier
+        self.max_hp /= constant_multiplier
+        self.hp /= constant_multiplier
+        self.defense /= constant_multiplier
+        self.damage /= constant_multiplier
+        self.crit_chance /= constant_multiplier
+        self.crit_damage /= constant_multiplier
+        self.experience_per_level /= constant_multiplier
 
-            self.level += 1
+        self.level += 1
 
-            constant_multiplier = self.calculate_constant_multiplier()
+        constant_multiplier = self.calculate_constant_multiplier()
 
-            self.max_hp *= constant_multiplier
-            self.hp *= constant_multiplier
-            self.defense *= constant_multiplier
-            self.damage *= constant_multiplier
-            self.crit_chance *= constant_multiplier
-            self.crit_damage *= constant_multiplier
-            self.experience_per_level *= constant_multiplier
+        self.max_hp *= constant_multiplier
+        self.hp *= constant_multiplier
+        self.defense *= constant_multiplier
+        self.damage *= constant_multiplier
+        self.crit_chance *= constant_multiplier
+        self.crit_damage *= constant_multiplier
+        self.experience_per_level *= constant_multiplier
 
-
-
-
-
-            
-
-            
 
 
 # NPC class
@@ -259,6 +253,35 @@ class Player(Enemy):
         else:
             print("You don't have that item")
             self.ask_weapon(target)
+
+    def level_up(self):
+        while self.experience >= self.experience_per_level:
+            self.experience -= self.experience_per_level
+            self.recalculate_stats_on_level_up()
+
+    def recalculate_stats_on_level_up(self):
+        
+        constant_multiplier = self.calculate_constant_multiplier()
+
+        self.max_hp /= constant_multiplier
+        self.hp /= constant_multiplier
+        self.defense /= constant_multiplier
+        self.damage /= constant_multiplier
+        self.crit_chance /= constant_multiplier
+        self.crit_damage /= constant_multiplier
+        self.experience_per_level /= constant_multiplier
+
+        self.level += 1
+
+        constant_multiplier = self.calculate_constant_multiplier()
+
+        self.max_hp *= constant_multiplier
+        self.hp *= constant_multiplier
+        self.defense *= constant_multiplier
+        self.damage *= constant_multiplier
+        self.crit_chance *= constant_multiplier
+        self.crit_damage *= constant_multiplier
+        self.experience_per_level *= constant_multiplier
 
 
 # Definitions of engine-crucial instances
