@@ -30,6 +30,7 @@ class Enemy(Entity):
         self.level = level
 
         constant_multiplier = self.calculate_constant_multiplier()
+        print(f"constant multiplier: {constant_multiplier}")
 
         super().__init__(name, hp * constant_multiplier, defense * constant_multiplier)
 
@@ -52,7 +53,7 @@ class Enemy(Entity):
         print(f"{self.name} has {self.hp} hp, {self.defense} defense and {self.attack} attack")
 
     def calculate_constant_multiplier(self):
-        return 0.99 + (self.level + 100) / self.level
+        return 0.99 + self.level / 100
 
 
 class Weapon:
@@ -69,9 +70,10 @@ class Weapon:
 
     def __init__(self, name, damage, crit_rate, crit_damage, level, experience, experience_per_level):
 
+        self.level = level
         constant_multiplier = self.calculate_constant_multiplier()
 
-        self.level = level
+   
         self.name = name
 
         self.damage = damage * constant_multiplier
@@ -93,13 +95,15 @@ class Weapon:
             print(f"{user.name} hit {target.name} with {self.name} for {self.calculate_damage(target, user)} damage.")
             if isinstance(target, Player):
                 print("You died.")
-                print("Exiting game...")
-                quit()
+
+
 
             else:
                 print(f"{target.name} died.")
                 user.experience += target.experience_worth
-                self.experience += int(target.experience_worth * 1.5)
+                self.experience += target.experience_worth
+                user.level_up()
+                self.level_up()
 
             del target
             
@@ -128,7 +132,7 @@ class Weapon:
         return full_critical_hits
     
     def calculate_constant_multiplier(self):
-        return 0.99 + (self.level + 100) / self.level
+        return 0.99 + self.level / 100
 
     def level_up(self):
         while self.experience >= self.experience_per_level:
@@ -283,6 +287,10 @@ class Player(Enemy):
         self.crit_damage *= constant_multiplier
         self.experience_per_level *= constant_multiplier
 
-
+    def print_end_stats(self):
+        print(f"You managed to get a whopping {self.level} {"level" if self.level == 1 else "levels"}.")
+        print(f"You have also gained {self.experience} {"point" if self.experience == 1 else "points"}.")
+        print(f"You would need {self.experience_per_level - self.experience} {"point" if self.experience_per_level - self.experience == 1 else "points"} to level up again.")
+        print("Good job")
 # Definitions of engine-crucial instances
-fist = Weapon("Fist", 0, 0, 0, 0, 0)
+fist = Weapon("Fist", 0, 0, 0, 1, 0, 0)
