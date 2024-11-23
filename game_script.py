@@ -21,47 +21,50 @@ def purple_text(string):
 def title_screen():
     global player_name
     
+while True:
+    skip = (input("Do you want to skip dialogue? For the story I recommend to say no. Yes/No: "))
+    print("\n")
+    
+    if skip.lower() == "no":
+        print("Welcome, traveler.\n")
+        sleep(2)
+        print(f"{game.blue_text("You")} are lost in a {game.green_text("Dark Forest")}.")
+        sleep(4)
+        print(f"Oh, yes, {game.purple_text("I")} forgot to introduce {game.purple_text("myself")}.")
+        sleep(4)
+        print(f"{game.purple_text("I")} am {purple_text("Aetherion")}, the ruler of {game.green_text("Dark Forest")}.")
+        sleep(4)
+        player_name = input(f"How should I refer to {game.blue_text("you")}? ")
+        sleep(1)
+        print(f"Yet again, welcome, {game.blue_text(player_name)}.\n")
+        sleep(4)
+        print(f"{game.blue_text("You")} might be wondering why you're here.")
+        sleep(4)
+        print("One shall find the reason for struggle after they have defeated it.\n")
+        sleep(4)
+        print(f"There is a path out, but {game.blue_text("you")} can see a {game.yellow_text("shadowy figure")} ahead.")
+        sleep(6)
+        print(f"{game.blue_text("You")} identify the shadowy figure as a {game.yellow_text('skeleton')}.\n")
+        sleep(4)
+        print(f"You wield an old, {game.green_text("rusty sword")}.")
+        sleep(4)
+        print("It has definitely seen better days, but using it is your only option.")
+        sleep(4)
+        print(f"{game.blue_text(player_name)}, we shall meet again.")
+        sleep(4)
+        print("And there, your adventure starts.\n")
+        sleep(12)
+    
+    elif skip.lower() == "yes":
+        print(f"{game.blue_text("You")} skippped the dialogue!")
+        sleep(4)
+        player_name = input("What is your name? ")
+        sleep(4)
+        print("And there, your adventure starts.\n")
+        sleep(12)
 
-skip = (input("Do you want to skip dialogue? For story I recomend to say no. Yes/No: "))
-print("\n")
-
-if skip == "No":
-    print("Welcome, traveler.\n")
-    sleep(2)
-    print(f"{game.blue_text("You")} are lost in a {game.green_text("Dark Forest")}.")
-    sleep(4)
-    print(f"Oh, yes, {game.purple_text("I")} forgot to introduce {game.purple_text("myself")}.")
-    sleep(4)
-    print(f"{game.purple_text("I")} am {purple_text("Aetherion")}, the ruler of {game.green_text("Dark Forest")}.")
-    sleep(4)
-    player_name = input(f"How should I refer to {game.blue_text("you")}? ")
-    sleep(1)
-    print(f"Yet again, welcome, {game.blue_text(player_name)}.\n")
-    sleep(4)
-    print(f"{game.blue_text("You")} might be wondering why you're here.")
-    sleep(4)
-    print("One shall find the reason for struggle after they have defeated it.\n")
-    sleep(4)
-    print(f"There is a path out, but {game.blue_text("you")} can see a {game.yellow_text("shadowy figure")} ahead.")
-    sleep(6)
-    print(f"{game.blue_text("You")} identify the shadowy figure as a {game.yellow_text('skeleton')}.\n")
-    sleep(4)
-    print(f"You wield an old, {game.green_text("rusty sword")}.")
-    sleep(4)
-    print("It has definitely seen better days, but using it is your only option.")
-    sleep(4)
-    print(f"{game.blue_text(player_name)}, we shall meet again.")
-    sleep(4)
-    print("And there, your adventure starts.\n")
-    sleep(12)
-
-elif skip == "Yes":
-    print(f"{game.blue_text("You")} skippped the dialogue!")
-    sleep(4)
-    player_name = input("What is your name? ")
-    sleep(4)
-    print("And there, your adventure starts.\n")
-    sleep(12)
+    else:
+        print(red_text("Invalid input!))
     
 
 def initialize_game(player_name):
