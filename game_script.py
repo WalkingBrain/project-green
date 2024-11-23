@@ -73,23 +73,31 @@ def initialize_game(player_name):
 def first_kill():
     sleep(2)
     print("\nYou killed the skeleton!")
+    sleep(6)
     print("Though you are now a murderer, you are on the right path.")
+    sleep(2)
     print("I shall reward you for your actions later, but for now, you may continue your journey.\n")
     sleep(12)
 
 def second_kill():
     sleep(2)
     print("\nYet another skeleton down!")
+    speep(2)
     print("I am impressed.")
+    sleep(1)
     print(f"{blue_text(player.name)}, you are truly skilled.") # type: ignore
+    sleep(4)
     print("Though I believe you are skilled, I have not decided whether you are worthy enough for my sword.\n")
     sleep(12)
 
 def third_kill():
     sleep(2)
     print("\nYet another skeleton down!")
+    sleep(1)
     print("More worthy opponents shall come.")
+    sleep(5)
     print("You are in need of a better weapon.")
+    sleep(4)
     print("Thus, I reward you with a sword.\n")
     sleep(5)
     
@@ -98,23 +106,34 @@ def third_kill():
     answer = input(f"\nAnything you want to tell {purple_text("Aetherion")}? ")
     if answer == "Aetherion":
         print("You may have noticed that I no longer take pauses in my speech.")
+        sleep(2)
         print("This is caused purely by Philip being too lazy to put sleep() statements everywhere.")
-        print("If you want them, he'll add them in the next update if you tell him.")
+        sleep(4)
+        print("So me, Martin, fixed it for him.")
+        sleep(2)
+        print("You're wellcome!")
+        sleep(4)
         print(f"Your journey awaits you, {blue_text(player.name)}.\n") # type: ignore
         sleep(12)
 
     else:
         print("Nothing?")
+        sleep(6)
         print("I see.")
+        sleep(2)
         print(f"Your journey awaits you, {blue_text(player.name)}.\n") # type: ignore
         sleep(12)
 
 def fourth_kill():
     sleep(2)
     print(f"\n{blue_text(player.name)}, how did you fare in the battle?") # type: ignore
+    sleep(4)
     print("Well, we see yet again, so your sword must've done wonders.")
+    sleep(6)
     print("Philip is too lazy to make more stages, so in the meantime, enjoy leveling up and killing endless zombies and skeletons!")
+    sleep(12)
     print(f"I, {purple_text("Aetherion")} will await our next encounter.")
+    sleep(4)
     print("Until then, good luck.\n")
     sleep(10)
 
