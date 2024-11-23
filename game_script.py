@@ -20,10 +20,11 @@ def purple_text(string):
 
 def title_screen():
     global player_name
+    
 
-skip = int(input("Do you want to skip dialogue? For story I recomend to say no. Yes(1)/No(2): "))
+skip = (input("Do you want to skip dialogue? For story I recomend to say no. Yes/No: "))
 
-if int(skip) = 2:
+if skip == "No":
     print("Welcome, traveler.\n")
     sleep(2)
     print("You are lost in a dark forest.")
@@ -52,7 +53,7 @@ if int(skip) = 2:
     print("And there, your adventure starts.\n")
     sleep(12)
 
-elif int(skip) = 1:
+elif skip == "Yes":
     print("You skippped the dialogue!")
     sleep(4)
     player_name = input("What is your name? ")
