@@ -22,7 +22,7 @@ def title_screen():
     global player_name
     
 
-skip = (input("Do you want to skip dialogue? For story I recomend to say no. Yes/No: "))
+skip = (input("Do you want to skip dialogue? For story I recomend to say no. Yes/No: \n"))
 
 if skip == "No":
     print("Welcome, traveler.\n")
@@ -33,13 +33,14 @@ if skip == "No":
     sleep(4)
     print(f"I am {purple_text("Aetherion")}, the ruler of this forest.")
     sleep(4)
+    player_name = input("How should I refer to you? ")
+    sleep(1)
     print("You might be wondering why you're here.")
     sleep(4)
     print("One shall find the reason for struggle after they have defeated it.")
     sleep(4)
     print("There is a path out, but you can see a shadowy figure ahead.")
-    player_name = input("How should I refer to you? ")
-    sleep(4)
+    sleep(6)
     print(f"Yet again, welcome, {game.red_text(player_name)}.\n")
     sleep(4)
     print(f"You identify the shadowy figure as a {game.yellow_text('skeleton')}.")
