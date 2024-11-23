@@ -12,6 +12,13 @@ def green_text(string):
 def yellow_text(string):
     return f"\033[33m{string}\033[0m"  # ANSI escape code for yellow text
 
+def is_int(number):
+    try:
+        int(number)
+        return True
+    except ValueError:
+        return False
+
 
 class Entity:
 
@@ -24,6 +31,7 @@ class Entity:
         self.defense = defense
         self.hp = self.max_hp
         self.is_alive = True
+
         Entity.instances.append(self)
         Entity.instance_names[self.name.lower()] = self
     
@@ -32,6 +40,7 @@ class Entity:
 
     def heal(self, amount):
         self.hp = min(self.hp + amount, self.max_hp)
+        print(f"{blue_text(self.name)} has been healed for {green_text(amount)} hp.")
 
     def talk(self, words):
         print(f"{green_text(self.name)} says: {words}")
@@ -85,7 +94,6 @@ class Weapon:
         self.level = level
         constant_multiplier = self.calculate_constant_multiplier()
 
-   
         self.name = name
 
         self.damage = damage * constant_multiplier
@@ -97,17 +105,19 @@ class Weapon:
         Weapon.instances[self.name.lower()] = self
     
     def attack_weapon(self, target, user):
-        calculated_damage = self.calculate_damage(target, user)
+        calculated_damage, did_crit = self.calculate_damage(target, user)
         target.take_damage(calculated_damage)
         formed_string = f"{blue_text(user.name)} hit {yellow_text(target.name)} with {blue_text(self.name)} for {red_text(calculated_damage)} damage."
+
+        if did_crit:
+            formed_string += " Your hit was a critical hit!"
+
         if target.hp <= 0:
             print(formed_string)
             if isinstance(target, Player):
                 print(red_text("You died."))
                 target.print_end_stats()
                 exit("Successful exit.")
-
-
 
             else:
                 print(f"{yellow_text(target.name)} died.")
@@ -117,7 +127,7 @@ class Weapon:
                 user.level_up()
                 self.level_up()
                 user.murder_count += 1
-                user.heal((target.max_hp + user.max_hp) / 1)
+                user.heal((target.max_hp + user.max_hp) / 2)
 
             target.is_alive = False
             
@@ -139,8 +149,9 @@ class Weapon:
         critical_hit_multiplier = 1 + critical_hits * local_crit_damage / 100
 
         damage = defense_multiplier * local_attack * critical_hit_multiplier
+        did_crit = True if critical_hits else False
 
-        return damage
+        return damage, did_crit
     
     def calculate_critical_hits(self, user):
         local_crit_rate = self.crit_rate + user.crit_rate
@@ -210,7 +221,7 @@ class Player(Enemy):
         print("Inventory:")
         for item in self.inventory:
             weapon = Weapon.instances[item]
-            print(f"- {green_text(weapon.name)}")
+            print(f"- {green_text(weapon.name)} ({green_text(1)}):")
             print(f"    Level: {blue_text(weapon.level)}")
             print(f"    Damage: {red_text(weapon.damage)}")
             print(f"    Crit Rate: {red_text(weapon.crit_rate)}")
@@ -226,16 +237,18 @@ class Player(Enemy):
         If the player enters "flee", the function will return to the main menu.
         """
         print("Your enemies are:")
+        index = 0
         for enemy in Enemy.instances: # Loop through the list of enemies
             if enemy.is_alive and not isinstance(enemy, NPC):
-                print(f"{yellow_text(enemy.name)}:")
-                print(f"{red_text(enemy.hp)} hp, {red_text(enemy.defense)} defense and {red_text(enemy.attack)} attack")
+                index += 1
+                print(f"{yellow_text(enemy.name)} ({green_text(index)}):")
+                print(f"{red_text(enemy.hp)} out of {red_text(enemy.max_hp)} hp, {red_text(enemy.defense)} defense and {red_text(enemy.attack)} attack")
         
         choice = input("Enter the enemy you want to attack (exit to exit) ")
         if choice.lower() == "exit": # If the player enters "exit", exit the game
             exit()
 
-        elif choice.lower() == self.name.lower():
+        elif choice.lower() == self.name.lower() or (int(choice) == 1 if is_int(choice) else 0):
             suicidal_decision = input(f"You shouldn't attack yourself, are you sure? {red_text('Yes')}/{green_text('No')}: ")
 
             if suicidal_decision.lower() == "yes": # Asks the player whether suicide is their choice
@@ -244,6 +257,14 @@ class Player(Enemy):
             
             else:
                 self.prompt_attack()
+
+        elif is_int(choice) and int(choice) <= len(Enemy.instances):
+
+            choice = Enemy.instances[int(choice) - 1]
+
+            print(f"You have entered a valid target. {green_text('Good job.')}")
+            self.ask_weapon(choice)
+
             
         else:
             if any(instance.name.lower() == choice.lower() for instance in Enemy.instances):
@@ -262,6 +283,11 @@ class Player(Enemy):
         choice = input("Enter the weapon you want to use (exit to quit the game, flee to go back): ")
         if choice.lower() == "exit":
             exit()
+
+        elif is_int(choice):
+            if int(choice) <= len(self.inventory):
+                weapon = Weapon.instances[self.inventory[int(choice) - 1]]
+                weapon.attack_weapon(target, self)
 
         elif choice.lower() in self.inventory:
             weapon = Weapon.instances[choice.lower()]
@@ -306,7 +332,7 @@ class Player(Enemy):
 
     def print_end_stats(self):
         print(f"You managed to get a whopping {blue_text(self.level)} {"level" if self.level == 1 else "levels"}.")
-        print(f"You have also gained {yellow_text(self.experience)} {"point" if self.experience == 1 else "points"}.")
+        print(f"You have also gained {yellow_text(self.experience)} experience {"point" if self.experience == 1 else "points"}.")
         print(f"You would need {yellow_text(self.experience_per_level - self.experience)} {"point" if self.experience_per_level - self.experience == 1 else "points"} to level up again.")
         print("Good job")
 
