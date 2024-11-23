@@ -60,6 +60,7 @@ elif skip == "Yes":
     sleep(4)
     print("And there, your adventure starts.\n")
     sleep(12)
+    
 
 def initialize_game(player_name):
     global player, skeleton, zombie, rusty_sword, sword
