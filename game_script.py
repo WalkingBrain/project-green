@@ -22,46 +22,54 @@ def title_screen():
     global player_name
     
 
-skip = (input("Do you want to skip dialogue? For story I recomend to say no. Yes/No: "))
+skip = (input("Do you want to skip dialogue? If you want the story to be told to you, type No. Yes/No: "))
 print("\n")
+while True:
+    if skip.lower() == "no":
+        print("Welcome, traveler.\n")
+        sleep(2)
+        print("You are lost in a dark forest.")
+        sleep(4)
+        print("Oh, yes, I forgot to introduce myself.")
+        sleep(4)
+        print(f"I am {purple_text("Aetherion")}, the ruler of this forest.")
+        sleep(4)
+        player_name = input("How should I refer to you? ")
+        sleep(1)
+        print(f"Yet again, welcome, {game.red_text(player_name)}.")
+        sleep(4)
+        print("You might be wondering why you're here.")
+        sleep(4)
+        print("One shall find the reason for struggle after they have defeated it.")
+        sleep(4)
+        print("There is a path out, but you can see a shadowy figure ahead.")
+        sleep(6)
+        print(f"You identify the shadowy figure as a {game.yellow_text('skeleton')}.")
+        sleep(4)
+        print("You wield an old, rusty sword.")
+        sleep(4)
+        print("It has definitely seen better days, but using it is your only option.")
+        sleep(4)
+        print(f"{game.red_text(player_name)}, we shall meet again.")
+        sleep(4)
+        print("And there, your adventure starts.\n")
+        sleep(12)
+        break
 
-if skip == "No":
-    print("Welcome, traveler.\n")
-    sleep(2)
-    print("You are lost in a dark forest.")
-    sleep(4)
-    print("Oh, yes, I forgot to introduce myself.")
-    sleep(4)
-    print(f"I am {purple_text("Aetherion")}, the ruler of this forest.")
-    sleep(4)
-    player_name = input("How should I refer to you? ")
-    sleep(1)
-    print(f"Yet again, welcome, {game.red_text(player_name)}.")
-    sleep(4)
-    print("You might be wondering why you're here.")
-    sleep(4)
-    print("One shall find the reason for struggle after they have defeated it.")
-    sleep(4)
-    print("There is a path out, but you can see a shadowy figure ahead.")
-    sleep(6)
-    print(f"You identify the shadowy figure as a {game.yellow_text('skeleton')}.")
-    sleep(4)
-    print("You wield an old, rusty sword.")
-    sleep(4)
-    print("It has definitely seen better days, but using it is your only option.")
-    sleep(4)
-    print(f"{game.red_text(player_name)}, we shall meet again.")
-    sleep(4)
-    print("And there, your adventure starts.\n")
-    sleep(12)
+    elif skip.lower() == "yes":
+        print("You skipped the dialogue!")
+        sleep(4)
+        player_name = input("What is your name? ")
+        sleep(4)
+        print("And there, your adventure starts.\n")
+        sleep(12)
+        break
 
-elif skip == "Yes":
-    print("You skippped the dialogue!")
-    sleep(4)
-    player_name = input("What is your name? ")
-    sleep(4)
-    print("And there, your adventure starts.\n")
-    sleep(12)
+    else:
+        print(f"{red_text('Invalid input!')}")
+
+    
+
     
 
 def initialize_game(player_name):
@@ -95,7 +103,7 @@ def first_kill():
 def second_kill():
     sleep(2)
     print("\nYet another skeleton down!")
-    speep(2)
+    sleep(2)
     print("I am impressed.")
     sleep(1)
     print(f"{blue_text(player.name)}, you are truly skilled.") # type: ignore
@@ -124,7 +132,11 @@ def third_kill():
         sleep(4)
         print("So me, Martin, fixed it for him.")
         sleep(2)
-        print("You're wellcome!")
+        print("You're welcome!")
+        sleep(4)
+        print("And Martin also wrote speep(2) in second_kill(), so I (Philip) have to correct it.")
+        sleep(2)
+        print("So yet again, you're welcome!")
         sleep(4)
         print(f"Your journey awaits you, {blue_text(player.name)}.\n") # type: ignore
         sleep(12)
@@ -150,35 +162,8 @@ def fourth_kill():
     print("Until then, good luck.\n")
     sleep(10)
 
-title_screen()
-initialize_game(player_name)
-
-completed_stage_one = False
-completed_stage_two = False
-completed_stage_three = False
-completed_stage_four = False
-
-while True:
-    
-    enemies_to_spawn = ["skeleton"]
-
-    if player.murder_count == 1 and not completed_stage_one: # type: ignore
-        first_kill()
-        completed_stage_one = True
-
-    if player.murder_count == 2 and not completed_stage_two: # type: ignore
-        second_kill()
-        completed_stage_two = True
-    
-    if player.murder_count == 3 and not completed_stage_three: # type: ignore
-        third_kill()
-        enemy_to_spawn = ["zombie"]
-        completed_stage_three = True
-        
-    if player.murder_count == 4 and not completed_stage_four: # type: ignore
-        fourth_kill()
-        enemy_to_spawn = ["skeleton", "zombie"]
-        completed_stage_four = True
+def spawn_enemies(enemies_to_spawn):
+    global skeleton, zombie
 
     choices = 0
 
@@ -189,18 +174,51 @@ while True:
         choices += 1
     
     if choices == 2:
-        if game.randint(0, 1) == 0:
+        if game.randint(0, 1) == 0 and not skeleton.is_alive:
             skeleton = game.Enemy("Skeleton", 50, 0, 10, 20, 50, player.level, 40) # type: ignore
         
-        else:
+        elif not zombie.is_alive:
             zombie = game.Enemy("Zombie", 75, 0, 15, 25, 50, player.level, 60) # type: ignore
     
-    elif "skeleton" in enemies_to_spawn:
+    elif "skeleton" in enemies_to_spawn and not skeleton.is_alive:
         skeleton = game.Enemy("Skeleton", 50, 0, 10, 20, 50, player.level, 40) # type: ignore
     
-    else:
+    elif "zombie" in enemies_to_spawn and not zombie.is_alive:
         zombie = game.Enemy("Zombie", 75, 0, 15, 25, 50, player.level, 60) # type: ignore
 
+
+title_screen()
+initialize_game(player_name)
+
+completed_stages = {1: False, 2: False, 3: False, 4: False}
+
+while True:
+    
+    enemies_to_spawn = ["skeleton"]
+
+    if player.murder_count == 1 and not completed_stages[1]: # type: ignore
+        first_kill()
+        completed_stages[1] = True
+
+
+    if player.murder_count == 2 and not completed_stages[2]: # type: ignore
+        second_kill()
+        completed_stages[2] = True
+
+    if player.murder_count == 3 and not completed_stages[3]: # type: ignore
+        third_kill()
+        enemy_to_spawn = ["zombie"]
+        print("Set enemy to spawn to zombie.")
+        completed_stages[3] = True
+        
+    if player.murder_count == 4 and not completed_stages[4]: # type: ignore
+        fourth_kill()
+        enemy_to_spawn = ["skeleton", "zombie"]
+        print("Set enemy to spawn to skeleton and zombie.")
+        completed_stages[4] = True
+    
+
+    spawn_enemies(enemies_to_spawn)
 
     player.prompt_attack() # type: ignore
 
