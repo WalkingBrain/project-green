@@ -188,8 +188,7 @@ def spawn_enemies(enemies_to_spawn):
         if skeleton.is_alive:
             skeleton.is_alive = False
 
-#title_screen()
-player_name = "Philip"
+title_screen()
 initialize_game(player_name)
 
 completed_stage_one = False
@@ -219,7 +218,6 @@ while True:
         enemies_to_spawn = ["skeleton", "zombie"]
         completed_stage_four = True
 
-    print(enemies_to_spawn)
     spawn_enemies(enemies_to_spawn)
 
 
