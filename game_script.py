@@ -95,7 +95,7 @@ def first_kill():
 def second_kill():
     sleep(2)
     print("\nYet another skeleton down!")
-    speep(2)
+    sleep(2)
     print("I am impressed.")
     sleep(1)
     print(f"{blue_text(player.name)}, you are truly skilled.") # type: ignore
