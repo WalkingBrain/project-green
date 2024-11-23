@@ -48,7 +48,7 @@ if skip == "No":
     sleep(4)
     print("It has definitely seen better days, but using it is your only option.")
     sleep(4)
-    print(f"{player_name}, we shall meet again.")
+    print(f"{game.red_text(player_name)}, we shall meet again.")
     sleep(4)
     print("And there, your adventure starts.\n")
     sleep(12)
