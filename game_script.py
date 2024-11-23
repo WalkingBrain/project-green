@@ -21,6 +21,9 @@ def purple_text(string):
 def title_screen():
     global player_name
 
+skip = int(input("Do you want to skip dialogue? For story I recomend to say no. Yes(1)/No(2): "))
+
+if skip = 2:
     print("Welcome, traveler.\n")
     sleep(2)
     print("You are lost in a dark forest.")
@@ -49,7 +52,13 @@ def title_screen():
     print("And there, your adventure starts.\n")
     sleep(12)
 
-
+elif skip = 1:
+    print("You skippped dhe dialogue!")
+    sleep(4)
+    player_name = input("What is your name? ")
+    sleep(4)
+    print("And there, your adventure starts.\n")
+    sleep(12)
 
 def initialize_game(player_name):
     global player, skeleton, zombie, rusty_sword, sword
