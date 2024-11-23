@@ -81,9 +81,10 @@ def initialize_game(player_name):
     rusty_sword = game.Weapon("Rusty Sword", 10, 20, 50, 1, 0, 75)
     sword = game.Weapon("Sword", 15, 30, 60, 1, 0, 80)
 
+    print(f"Here is {blue_text("your")} {green_text("sword")}.")
     player.obtain_item(rusty_sword)
 
-    print(f"With that in mind, your first {game.red_text("fight")} shall come along.\n")
+    print(f"With this in mind, your first {game.red_text("fight")} shall come along.\n")
     sleep(4)
 
 def first_kill():
