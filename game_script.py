@@ -187,8 +187,8 @@ def spawn_enemies(enemies_to_spawn):
     
     elif "zombie" in enemies_to_spawn and not zombie.is_alive:
         zombie = game.Enemy("Zombie", 75, 0, 15, 25, 50, player.level, 60)
-        if skeleton.is_alive:
-            skeleton.is_alive = False
+        if zombie.is_alive:
+            zombie.is_alive = False
 
 title_screen()
 initialize_game(player_name)
