@@ -23,7 +23,7 @@ def title_screen():
 
 skip = int(input("Do you want to skip dialogue? For story I recomend to say no. Yes(1)/No(2): "))
 
-if skip = 2:
+if int(skip) = 2:
     print("Welcome, traveler.\n")
     sleep(2)
     print("You are lost in a dark forest.")
@@ -52,8 +52,8 @@ if skip = 2:
     print("And there, your adventure starts.\n")
     sleep(12)
 
-elif skip = 1:
-    print("You skippped dhe dialogue!")
+elif int(skip) = 1:
+    print("You skippped the dialogue!")
     sleep(4)
     player_name = input("What is your name? ")
     sleep(4)
