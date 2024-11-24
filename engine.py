@@ -64,7 +64,7 @@ class Enemy(Entity):
 
     def action_attack(self, target, weapon):
         if weapon is None:
-            fist.attack_weapon(target, self)
+            bare_hands.attack_weapon(target, self)
 
         else:
             weapon.attack_weapon(target, self)
@@ -219,9 +219,11 @@ class Player(Enemy):
     
     def list_inventory(self):
         print("Inventory:")
+        index = 0
         for item in self.inventory:
+            index += 1
             weapon = Weapon.instances[item]
-            print(f"- {green_text(weapon.name)} ({green_text(1)}):")
+            print(f"- {green_text(weapon.name)} ({green_text(index)}):")
             print(f"    Level: {blue_text(weapon.level)}")
             print(f"    Damage: {red_text(weapon.damage)}")
             print(f"    Crit Rate: {red_text(weapon.crit_rate)}")
@@ -236,13 +238,13 @@ class Player(Enemy):
         If the player enters "exit", the function will exit the game.    Crit Damage: {Weapon.instances[item].crit_damage}
         If the player enters "flee", the function will return to the main menu.
         """
+        valid_enemies = [enemy for enemy in Enemy.instances if enemy.is_alive and not isinstance(enemy, NPC)]
         print("Your enemies are:")
         index = 0
-        for enemy in Enemy.instances: # Loop through the list of enemies
-            if enemy.is_alive and not isinstance(enemy, NPC):
-                index += 1
-                print(f"{yellow_text(enemy.name)} ({green_text(index)}):")
-                print(f"{red_text(enemy.hp)} out of {red_text(enemy.max_hp)} hp, {red_text(enemy.defense)} defense and {red_text(enemy.attack)} attack")
+        for enemy in valid_enemies: # Loop through the list of enemies
+            index += 1
+            print(f"{yellow_text(enemy.name)} ({green_text(index)}):")
+            print(f"{red_text(enemy.hp)} out of {red_text(enemy.max_hp)} hp, {red_text(enemy.defense)} defense and {red_text(enemy.attack)} attack")
         
         choice = input("Enter the enemy you want to attack (exit to exit) ")
         if choice.lower() == "exit": # If the player enters "exit", exit the game
@@ -258,18 +260,18 @@ class Player(Enemy):
             else:
                 self.prompt_attack()
 
-        elif is_int(choice) and int(choice) <= len(Enemy.instances):
+        elif is_int(choice) and int(choice) <= len(valid_enemies):
 
-            choice = Enemy.instances[int(choice) - 1]
+            choice = valid_enemies[int(choice) - 1]
 
             print(f"You have entered a valid target. {green_text('Good job.')}")
             self.ask_weapon(choice)
 
             
         else:
-            if any(instance.name.lower() == choice.lower() for instance in Enemy.instances):
+            if any(instance.name.lower() == choice.lower() for instance in valid_enemies):
                 print(f"You have entered a valid target. {green_text("Good job.")}")
-                choice = Entity.instance_names[choice.lower()]
+                choice = Enemy.instance_names[choice.lower()]
                 self.ask_weapon(choice)
 
             else:
@@ -337,7 +339,7 @@ class Player(Enemy):
         print("Good job")
 
 # Definitions of engine-crucial instances
-fist = Weapon("Fist", 0, 0, 0, 1, 0, 0)
+bare_hands = Weapon("Bare hands", 5, 10, 20, 1, 0, 60)
 
 # Test the functions
 if __name__ == "__main__":

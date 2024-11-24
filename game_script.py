@@ -82,7 +82,7 @@ def initialize_game(player_name):
 
     rusty_sword = game.Weapon("Rusty Sword", 10, 20, 50, 1, 0, 75)
     sword = game.Weapon("Sword", 15, 30, 60, 1, 0, 80)
-    bare_hands = game.Weapon("Bare hands", 5, 10, 20, 1, 0, 60)
+    bare_hands = game.bare_hands
 
     print(f"Here is {blue_text("your")} {green_text("sword")}.")
     player.obtain_item(rusty_sword)
