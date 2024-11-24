@@ -74,7 +74,7 @@ class Enemy(Entity):
         print(f"Also, {yellow_text(self.name)} is level {red_text(self.level)} and has {red_text(self.crit_rate)} crit rate and {red_text(self.crit_damage)} crit damage.")
 
     def calculate_constant_multiplier(self):
-        return 0.99 + self.level / 100
+        return 0.98 + self.level / 50
 
 
 class Weapon:
@@ -110,7 +110,7 @@ class Weapon:
         formed_string = f"{blue_text(user.name)} hit {yellow_text(target.name)} with {blue_text(self.name)} for {red_text(calculated_damage)} damage."
 
         if did_crit:
-            formed_string += " Your hit was a critical hit!"
+            formed_string += f" {blue_text("Your") if isinstance(user, Player) else yellow_text("Their")} hit was a critical hit!"
 
         if target.hp <= 0:
             print(formed_string)
@@ -127,7 +127,7 @@ class Weapon:
                 user.level_up()
                 self.level_up()
                 user.murder_count += 1
-                user.heal((target.max_hp + user.max_hp) / 2)
+                user.heal((target.max_hp + user.max_hp) // 3)
 
             target.is_alive = False
             
@@ -162,7 +162,7 @@ class Weapon:
         return critical_hits
     
     def calculate_constant_multiplier(self):
-        return 0.99 + self.level / 100
+        return 0.98 + self.level / 50
 
     def level_up(self):
         while self.experience >= self.experience_per_level:
@@ -341,9 +341,3 @@ class Player(Enemy):
 # Definitions of engine-crucial instances
 bare_hands = Weapon("Bare hands", 5, 10, 20, 1, 0, 60)
 
-# Test the functions
-if __name__ == "__main__":
-    print(red_text("This is red text"))
-    print(blue_text("This is blue text"))
-    print(green_text("This is green text"))
-    print(yellow_text("This is yellow text"))

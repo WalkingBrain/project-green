@@ -26,7 +26,7 @@ def title_screen():
         print("\n")
         
         if skip.lower() == "no":
-            print("Welcome, traveler.\n")
+            print(f"Welcome, {blue_text("traveler")}.\n")
             sleep(2)
             print(f"{blue_text("You")} are lost in a {green_text("Dark Forest")}.")
             sleep(4)
@@ -34,7 +34,7 @@ def title_screen():
             sleep(4)
             print(f"{purple_text("I")} am {purple_text("Aetherion")}, the ruler of {green_text("Dark Forest")}.")
             sleep(4)
-            player_name = input(f"How should I refer to {blue_text("you")}? ")
+            player_name = input(f"How should {purple_text("I")} refer to {blue_text("you")}? ")
             sleep(1)
             print(f"Yet again, welcome, {blue_text(player_name)}.\n")
             sleep(4)
@@ -53,7 +53,7 @@ def title_screen():
             print(f"{blue_text(player_name)}, we shall meet again.")
             sleep(4)
             print(f"And there, {blue_text("your")} adventure starts.\n")
-            sleep(12)
+            sleep(8)
             break
         
         elif skip.lower() == "yes":
@@ -62,7 +62,7 @@ def title_screen():
             player_name = input("What is your name? ")
             sleep(4)
             print(f"And there, {blue_text("your")} adventure starts.\n")
-            sleep(12)
+            sleep(8)
             break
 
         else:
@@ -98,7 +98,7 @@ def first_kill():
     print(f"Though {blue_text("you")} are now a {red_text("murderer")}, {blue_text("you")} are on the right path.")
     sleep(4)
     print(f"{purple_text("I")} shall reward you for your actions later, but for now, you may continue your journey.\n")
-    sleep(12)
+    sleep(8)
 
 def second_kill():
     sleep(2)
@@ -109,7 +109,7 @@ def second_kill():
     print(f"{blue_text(player.name)}, {blue_text("you")} are truly skilled.") # type: ignore
     sleep(4)
     print(f"Though {purple_text("I")} believe {blue_text("you")} are skilled, {purple_text("I")} have not yet decided whether {blue_text("you")} are worthy of {purple_text("my")} {green_text("sword")}.\n")
-    sleep(12)
+    sleep(8)
 
 def third_kill():
     sleep(2)
@@ -134,12 +134,12 @@ def third_kill():
         sleep(2)
         print(f"{blue_text("You")}'re welcome!")
         sleep(4)
-        print(f"And {purple_text("Martin")} also wrote speep(2) in second_kill(), so {purple_text("I")} ({purple_text("Philip")}) had to correct it.")
+        print(f"But {purple_text("Martin")} also wrote speep(2) in second_kill(), so {purple_text("I")} ({purple_text("Philip")}) had to correct it.")
         sleep(2)
         print("This is hopefully the last time.")
         sleep(4)
         print(f"Your journey awaits {blue_text("you")}, {blue_text(player.name)}.\n") # type: ignore
-        sleep(12)
+        sleep(8)
 
     else:
         print("Nothing?")
@@ -147,7 +147,7 @@ def third_kill():
         print(f"{purple_text("I")} see.")
         sleep(2)
         print(f"Your journey awaits {blue_text("you")}, {blue_text(player.name)}.\n") # type: ignore
-        sleep(12)
+        sleep(8)
 
 def fourth_kill():
     sleep(2)
@@ -156,7 +156,7 @@ def fourth_kill():
     print("Well, we see yet again, so your sword must've done wonders.")
     sleep(6)
     print(f"{purple_text("Philip")} is too lazy to make more stages, so in the meantime, enjoy leveling up and killing endless {yellow_text("zombies")} and {yellow_text("skeletons")}!")
-    sleep(12)
+    sleep(8)
     print(f"{purple_text("I")}, {purple_text("Aetherion")} will await our next encounter.")
     sleep(4)
     print("Until then, good luck.\n")
@@ -199,8 +199,9 @@ completed_stage_three = False
 completed_stage_four = False
 
 while True:
-    
-    enemies_to_spawn = ["skeleton"]
+
+    if player.murder_count == 0: # type: ignore
+        enemies_to_spawn = ["skeleton"]
 
     if player.murder_count == 1 and not completed_stage_one: # type: ignore
         first_kill()
