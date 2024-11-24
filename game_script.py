@@ -70,7 +70,7 @@ def title_screen():
     
 
 def initialize_game(player_name):
-    global player, skeleton, zombie, rusty_sword, sword
+    global player, skeleton, zombie, rusty_sword, sword ,bare_hands
 
     player = game.Player(player_name, 100, 0, 5, 20, 50, 1, 0, 100)
 
@@ -82,9 +82,11 @@ def initialize_game(player_name):
 
     rusty_sword = game.Weapon("Rusty Sword", 10, 20, 50, 1, 0, 75)
     sword = game.Weapon("Sword", 15, 30, 60, 1, 0, 80)
+    bare_hands = game.Weapon("Bare hands", 5, 10, 20, 1, 0, 60)
 
     print(f"Here is {blue_text("your")} {green_text("sword")}.")
     player.obtain_item(rusty_sword)
+    player.obtain_item(bare_hands)
 
     print(f"With this in mind, your first {red_text("fight")} shall come along.\n")
     sleep(4)
