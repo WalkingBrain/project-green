@@ -48,9 +48,10 @@ class Entity:
 
 class Enemy(Entity):
     
-    def __init__(self, name, hp, defense, attack, crit_rate, crit_damage, level, experience_worth):
+    def __init__(self, name, hp, defense, attack, crit_rate, crit_damage, level, experience_worth, drops):
 
         self.level = level
+        self.drops = drops
 
         constant_multiplier = self.calculate_constant_multiplier()
 
@@ -75,6 +76,22 @@ class Enemy(Entity):
 
     def calculate_constant_multiplier(self):
         return 0.98 + self.level / 50
+    
+    def calculate_drops(self):
+
+        items_to_drop = []
+
+        for drop in self.drops:
+            if drop is None:
+                continue
+            chance = self.drops[drop]
+            if chance > 0:
+                if randint(0, 100) < chance:
+                    items_to_drop.append(drop)
+        
+        return items_to_drop
+
+
 
 
 class Weapon:
@@ -114,20 +131,40 @@ class Weapon:
 
         if target.hp <= 0:
             print(formed_string)
+
             if isinstance(target, Player):
                 print(red_text("You died."))
                 target.print_end_stats()
-                exit("Successful exit.")
+
+                while True:
+                    number_to_leave = randint(100, 10000)
+                    leave = input(f"Type {red_text(number_to_leave)} to exit once {blue_text("you")} have read {blue_text("your")} end stats. ")
+                    if leave == str(number_to_leave):
+                        exit(1)
+                
 
             else:
+
                 print(f"{yellow_text(target.name)} died.")
                 user.experience += target.experience_worth
                 self.experience += target.experience_worth
+
                 print(f"You have gained {green_text(target.experience_worth)} experience.")
+
                 user.level_up()
                 self.level_up()
                 user.murder_count += 1
                 user.heal((target.max_hp + user.max_hp) // 3)
+
+                for item in target.calculate_drops():
+
+                    if item in Weapon.instances.values() and not item in user.weapons:
+                        user.obtain_weapon(item)
+                    
+                    else:
+                        user.obtain_item(item)
+
+
 
             target.is_alive = False
             
@@ -188,6 +225,20 @@ class Weapon:
         self.crit_damage *= constant_multiplier
         self.experience_per_level *= constant_multiplier
 
+class Item:
+
+    def __init__(self, name, plural_name):
+        self.name = name
+        self.plural_name = plural_name
+
+        self.count = 0
+
+class Projectile(Item):
+    def __init__(self, name, plural_name, damage):
+
+        super().__init__(name, plural_name)
+
+        self.damage = damage
 
 
 # NPC class
@@ -200,27 +251,49 @@ class Player(Enemy):
     def __init__(self, name, hp, defense, attack, crit_rate, crit_damage, level, experience, experience_per_level):
 
         self.inventory = []
+        self.weapons = []
 
         self.experience = experience
         self.experience_per_level = experience_per_level
         self.murder_count = 0
 
-        super().__init__(name, hp, defense, attack, crit_rate, crit_damage, level, 0)
+        super().__init__(name, hp, defense, attack, crit_rate, crit_damage, level, 0, {})
     
-    def obtain_item(self, item):
-        # Add item to the inventory
-        self.inventory.append(item.name.lower())
-        print(f"{blue_text(self.name)} has obtained {green_text(item.name)}")
+    def obtain_item(self, item, count):
+        if item not in self.inventory:
+            self.inventory.append(item.name.lower())
+        
+        item.count += count
+        print(f"{blue_text(self.name)} has obtained {yellow_text(count)} {green_text(item.name if count == 1 else item.plural_name)}")
     
-    def drop_item(self, item):
-        # Remove item from the inventory
-        self.inventory.remove(item.name.lower())
-        print(f"{blue_text(self.name)} has dropped {green_text(item.name)}")
+    def drop_item(self, item, count):
+            
+            string_to_print = f"{yellow_text(count)} {green_text(item.name if count == 1 else item.plural_name)}"
+
+            if item.count != 0:
+                item.count -= count
+                if item.count <= 0:
+                    item.count = 0
+                    print(f"{blue_text(self.name)} has dropped {string_to_print}, which was all their {green_text(item.plural_name)}.")
+
+ 
+                else:
+                    print(f"{blue_text(self.name)} has dropped {string_to_print}, leaving {yellow_text(item.count)} {green_text(item.name if item.count == 1 else item.plural_name)} remaining.")
+
+            if item.count == 0 and item.name.lower() in self.inventory:
+                self.inventory.remove(item.name.lower())
+
+    def obtain_weapon(self, weapon):
+        self.weapons.append(weapon.name.lower())
+        print(f"{blue_text(self.name)} has obtained {green_text(weapon.name)}")
+
+    def lose_weapon(self, weapon):
+        self.weapons.remove(weapon.name.lower())
     
-    def list_inventory(self):
+    def list_weapons(self):
         print("Inventory:")
         index = 0
-        for item in self.inventory:
+        for item in self.weapons:
             index += 1
             weapon = Weapon.instances[item]
             print(f"- {green_text(weapon.name)} ({green_text(index)}):")
@@ -280,18 +353,18 @@ class Player(Enemy):
 
     def ask_weapon(self, target):
         
-        self.list_inventory()
+        self.list_weapons()
         
         choice = input("Enter the weapon you want to use (exit to quit the game, flee to go back): ")
         if choice.lower() == "exit":
             exit()
 
         elif is_int(choice):
-            if int(choice) <= len(self.inventory):
-                weapon = Weapon.instances[self.inventory[int(choice) - 1]]
+            if int(choice) <= len(self.weapons):
+                weapon = Weapon.instances[self.weapons[int(choice) - 1]]
                 weapon.attack_weapon(target, self)
 
-        elif choice.lower() in self.inventory:
+        elif choice.lower() in self.weapons:
             weapon = Weapon.instances[choice.lower()]
             weapon.attack_weapon(target, self)
 
